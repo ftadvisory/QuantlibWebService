@@ -45,15 +45,15 @@ namespace QuantLib {
 
 void SwapController::createSwap (Object<VanillaSwapDto> dto) {
 	try {
-        Calendar calendar 					    = TARGET();
-        BusinessDayConvention fixConvention     = Unadjusted;
-        BusinessDayConvention floatConvention   = Unadjusted;
-		Date startDate                          = Date (dto->startDate);
-		Date mtyDate                            = Date (dto->mtyDate);
+        Calendar calendar 					      = TARGET();
+        BusinessDayConvention fixConvention       = Unadjusted;
+        BusinessDayConvention floatConvention     = Unadjusted;
+		Date startDate                            = Date (dto->startDate);
+		Date mtyDate                              = Date (dto->mtyDate);
 		ext::shared_ptr<Quote> flatRate(new SimpleQuote(dto->fixedRate));
 		ext::shared_ptr<DayCounter> floatDaycount = dto->getFloatDayCounter();
         Handle<YieldTermStructure> rhTermStructure (ext::make_shared<FlatForward> (startDate, Handle<Quote> (flatRate),*floatDaycount)); 
-		ext::shared_ptr<IborIndex> floatIndex   = dto->getFloatingRateIndex (rhTermStructure);
+		ext::shared_ptr<IborIndex> floatIndex     = dto->getFloatingRateIndex (rhTermStructure);
 		Schedule fixedSchedule (startDate, 
 								mtyDate, 
 								Period(dto->getFixedFrequency ()),
@@ -75,12 +75,10 @@ void SwapController::createSwap (Object<VanillaSwapDto> dto) {
                              dto->notional,
 							 fixedSchedule, dto->fixedRate, *(dto->getFixedDayCounter ()),
                              floatSchedule, floatIndex, dto->floatSpread, floatIndex->dayCounter()));
-		std::cout << "SwapController swap start date: " << swap->startDate () << std::endl;
-		std::cout << "SwapController swap end date: " << swap->maturityDate () << std::endl;
-		std::cout << "SwapController fixed rate: " << swap->fixedRate () << std::endl;
-		std::cout <<  "SwapController float tenor from dto ... input: " <<  static_cast<int>(*dto->floatTenor)
-				  << " output: " << dto->getFloatTenor () << std::endl;
-		std::cout << "SwapController ibor index: " << swap->iborIndex ()->name () << std::endl;
+
+		std::ostringstream swapDetails;
+		swapDetails << "notional: " << swap->nominal () << " start date: " << startDate << " mty: " << mtyDate;
+		OATPP_LOGI("SwapController::createSwap", "Swap Created %s", swapDetails.str ().c_str ());
 
 	} catch (std::exception& e) {
         std::cout << e.what() << std::endl;

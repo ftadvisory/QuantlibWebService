@@ -77,7 +77,7 @@ class VanillaSwapDto : public oatpp::DTO {
                default:
                     break;
           }
-          return QuantLib::VanillaSwap::Payer;  // should throw an exception
+          throw ("Vanilla Swap - Undefined type");
      }
      QuantLib::Currency getFixedCurrency () {return getCurrency (fixedCurrency);}
      QuantLib::Currency getCurrency (CurrencyType currency) {
@@ -93,7 +93,7 @@ class VanillaSwapDto : public oatpp::DTO {
                default:
                     break;
           }
-          return QuantLib::Currency ();
+          throw ("Vanilla Swap - Undefined Currency");
      }
      std::string getFamiilyName () {
           IndexFamily family = floatIndexFamily;
@@ -105,7 +105,7 @@ class VanillaSwapDto : public oatpp::DTO {
                default: 
                     break;
           }
-          return "Undefined";
+          throw ("Vanilla Swap - Undefined Floating Index Family Name");
      }
      QuantLib::Frequency getFixedFrequency () {return getFrequency (fixedFrequency);}
      QuantLib::Frequency getFloatFrequency () {return getFrequency (floatFrequency);}
@@ -144,7 +144,7 @@ class VanillaSwapDto : public oatpp::DTO {
                          break;
                }
           }
-          return NULL;
+          throw ("Vanilla Swap - Undefined Floating Rate Index");
      }
      QuantLib::ext::shared_ptr<QuantLib::DayCounter> getFixedDayCounter () {return getDayCounter (fixedDaycount);}
      QuantLib::ext::shared_ptr<QuantLib::DayCounter> getFloatDayCounter () {return getDayCounter (floatDaycount);}
@@ -159,7 +159,7 @@ class VanillaSwapDto : public oatpp::DTO {
                default: 
                     break;
           }
-     	return NULL;
+          throw ("Vanilla Swap - Undefined Day Count Type");
      }
 };
 
