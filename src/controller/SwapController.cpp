@@ -6,28 +6,10 @@
 #endif
 
 #include <ql/instruments/vanillaswap.hpp>
-#include <ql/pricingengines/bond/discountingbondengine.hpp>
-#include <ql/pricingengines/swap/discountingswapengine.hpp>
 #include <ql/termstructures/yieldtermstructure.hpp>
-#include <ql/indexes/ibor/euribor.hpp>
-#include <ql/indexes/ibor/usdlibor.hpp>
-#include <ql/time/calendars/nullcalendar.hpp>
 #include <ql/time/calendars/target.hpp>
-#include <ql/time/calendars/unitedstates.hpp>
-#include <ql/time/daycounters/actualactual.hpp>
-#include <ql/time/daycounters/actual360.hpp>
-#include <ql/time/daycounters/thirty360.hpp>
-#include <ql/termstructures/yield/flatforward.hpp>
-#include <ql/time/daycounters/actual365fixed.hpp>
 #include <ql/time/daycounters/simpledaycounter.hpp>
-#include <ql/time/schedule.hpp>
-#include <ql/indexes/ibor/euribor.hpp>
-#include <ql/cashflows/iborcoupon.hpp>
-#include <ql/cashflows/cashflowvectors.hpp>
-#include <ql/utilities/dataformatters.hpp>
-#include <ql/cashflows/cashflows.hpp>
-#include <ql/currencies/europe.hpp>
-#include <ql/functional.hpp>
+#include <ql/termstructures/yield/flatforward.hpp>
 #include <ql/quotes/simplequote.hpp>
 #include <ql/time/date.hpp>
 
