@@ -31,10 +31,10 @@ ENUM(PaymentFrequency, v_int32,
 );
 
 ENUM(CurrencyType, v_int32,
-     VALUE(USD,840,"USD"),
-     VALUE(JPY,392,"JPY"),
-     VALUE(EUR,978,"EUR"),
-     VALUE(GBP,826,"GBP")
+     VALUE(USD,840,"USD"), // ISO Code for USD
+     VALUE(JPY,392,"JPY"), // ISD Code for JPY
+     VALUE(EUR,978,"EUR"), // ISO Code for EUR
+     VALUE(GBP,826,"GBP")  // ISO Code for GBP
 );
 
 ENUM(DaycountType, v_int32,
@@ -47,6 +47,16 @@ ENUM(IndexFamily, v_int32,
      VALUE(OIS,2,"OIS")
 );
 
+ENUM(BusinessDayConvention, v_int32,
+     VALUE(FOLLOWING, QuantLib::Following, "FOLLOWING" ),
+     VALUE(MODIFIEDFOLLOWING, QuantLib::ModifiedFollowing, "MODIFIEDFOLLOWING"),
+     VALUE(PRECENDING, QuantLib::Preceding, "PRECEDING"),
+     VALUE(MODIFIEDPRECENDING, QuantLib::ModifiedPreceding, "MODIFIEDPRECENDING"),
+     VALUE(UNADJUSTED, QuantLib::Unadjusted, "UNADJUSTED"),
+     VALUE(HALFMODIFIEDFOLLOWING, QuantLib::HalfMonthModifiedFollowing, "HALFMODIFIEDFOLLOWING"),
+     VALUE(NEAREST, QuantLib::Nearest, "NEAREST")
+);
+
 class VanillaSwapDto : public oatpp::DTO {
   
      DTO_INIT(VanillaSwapDto, DTO);
@@ -54,18 +64,19 @@ class VanillaSwapDto : public oatpp::DTO {
      DTO_FIELD(Int32, id);         // id 
      DTO_FIELD(Float32, notional);  // notional
      DTO_FIELD(Enum<SwapType>::AsNumber, type, "type");
+     DTO_FIELD(Enum<CurrencyType>::AsNumber, currency, "currency");
      DTO_FIELD(Int64, startDate);  // milliseconds since 1970
      DTO_FIELD(Int64, mtyDate);    // milliseconds since 1970
      DTO_FIELD(Float32, fixedRate); // percent
-     DTO_FIELD(Enum<CurrencyType>::AsNumber, fixedCurrency, "fixedCurrency");
      DTO_FIELD(Enum<PaymentFrequency>::AsNumber, fixedFrequency, "fixedFrequency");
      DTO_FIELD(Enum<DaycountType>::AsNumber, fixedDaycount, "fixedDaycount");
+     DTO_FIELD(Enum<BusinessDayConvention>::AsNumber, fixedDayConvention, "fixedDayConvention") = BusinessDayConvention::MODIFIEDFOLLOWING;
      DTO_FIELD(Float32, floatSpread);  // percent
      DTO_FIELD(Enum<IndexFamily>::AsNumber, floatIndexFamily);
-     DTO_FIELD(Enum<CurrencyType>::AsNumber, floatCurrency, "floatCurrency");
      DTO_FIELD(Enum<PaymentFrequency>::AsNumber, floatFrequency, "floatFrequency");
      DTO_FIELD(Enum<PaymentFrequency>::AsNumber, floatTenor, "floatTenor");
      DTO_FIELD(Enum<DaycountType>::AsNumber, floatDaycount, "floatDaycount");
+     DTO_FIELD(Enum<BusinessDayConvention>::AsNumber, floatDayConvention, "floatDayConvention") = BusinessDayConvention::MODIFIEDFOLLOWING;
      
      QuantLib::VanillaSwap::Type getType () {
           SwapType swapType = type;
@@ -77,11 +88,11 @@ class VanillaSwapDto : public oatpp::DTO {
                default:
                     break;
           }
-          throw ("Vanilla Swap - Undefined type");
+          throw ("VanillaSwapDto - Undefined type");
      }
-     QuantLib::Currency getFixedCurrency () {return getCurrency (fixedCurrency);}
-     QuantLib::Currency getCurrency (CurrencyType currency) {
-          switch (currency) {
+     QuantLib::Currency getCurrency () {
+          CurrencyType fx = currency;
+          switch (fx) {
                case CurrencyType::USD:
                     return QuantLib::USDCurrency ();
                case CurrencyType::EUR:
@@ -93,7 +104,7 @@ class VanillaSwapDto : public oatpp::DTO {
                default:
                     break;
           }
-          throw ("Vanilla Swap - Undefined Currency");
+          throw ("VanillaSwapDto - Undefined Currency");
      }
      std::string getFamiilyName () {
           IndexFamily family = floatIndexFamily;
@@ -105,7 +116,7 @@ class VanillaSwapDto : public oatpp::DTO {
                default: 
                     break;
           }
-          throw ("Vanilla Swap - Undefined Floating Index Family Name");
+          throw ("VanillaSwapDto - Undefined Floating Index Family Name");
      }
      QuantLib::Frequency getFixedFrequency () {return getFrequency (fixedFrequency);}
      QuantLib::Frequency getFloatFrequency () {return getFrequency (floatFrequency);}
@@ -127,24 +138,24 @@ class VanillaSwapDto : public oatpp::DTO {
           return QuantLib::NoFrequency;
      }
      QuantLib::Period getFloatTenor () {return QuantLib::Period (getFrequency (floatTenor));}
-     QuantLib::ext::shared_ptr<QuantLib::IborIndex> getFloatingRateIndex (QuantLib::Handle<QuantLib::YieldTermStructure>& h) {
-          CurrencyType currency = floatCurrency;
-          IndexFamily  family   = floatIndexFamily;
+     QuantLib::ext::shared_ptr<QuantLib::IborIndex> getFloatingRateIndex () {
+          CurrencyType fx    = currency;
+          IndexFamily family = floatIndexFamily;
           if (family == IndexFamily::LIBOR) {
-		     switch (currency) {
+		     switch (fx) {
                     case CurrencyType::USD:
-                         return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::USDLibor (getFloatTenor (), h));
+                         return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::USDLibor (getFloatTenor ()));
                     case CurrencyType::EUR:
-                         return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::EURLibor (getFloatTenor (), h));
+                         return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::EURLibor (getFloatTenor ()));
                     case CurrencyType::JPY:
-                         return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::JPYLibor (getFloatTenor (), h));
+                         return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::JPYLibor (getFloatTenor ()));
                     case CurrencyType::GBP:
-                         return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::GBPLibor (getFloatTenor (), h));
+                         return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::GBPLibor (getFloatTenor ()));
                     default:
                          break;
                }
           }
-          throw ("Vanilla Swap - Undefined Floating Rate Index");
+          throw ("VanillaSwapDto - Undefined Floating Rate Index");
      }
      QuantLib::ext::shared_ptr<QuantLib::DayCounter> getFixedDayCounter () {return getDayCounter (fixedDaycount);}
      QuantLib::ext::shared_ptr<QuantLib::DayCounter> getFloatDayCounter () {return getDayCounter (floatDaycount);}
@@ -159,7 +170,45 @@ class VanillaSwapDto : public oatpp::DTO {
                default: 
                     break;
           }
-          throw ("Vanilla Swap - Undefined Day Count Type");
+          throw ("VanillaSwapDto - Undefined Day Count Type");
+     }
+     QuantLib::BusinessDayConvention getBusinessDayConvention (bool fixedFlag) {
+          int bdc = (fixedFlag) ? static_cast<int> (*fixedDayConvention) : static_cast<int> (*floatDayConvention);
+          return QuantLib::BusinessDayConvention (bdc);
+     }
+     QuantLib::ext::shared_ptr<QuantLib::Schedule> getFixedSchedule (QuantLib::Calendar calendar) {
+          return getSchedule (calendar, true);
+     }
+     QuantLib::ext::shared_ptr<QuantLib::Schedule> getFloatSchedule (QuantLib::Calendar calendar) {
+          return getSchedule (calendar, false);
+     }
+     QuantLib::ext::shared_ptr<QuantLib::Schedule> getSchedule (QuantLib::Calendar calendar, bool fixedFlag) {
+          QuantLib::Period period = (fixedFlag) ? 
+               QuantLib::Period(getFixedFrequency ()) : 
+               QuantLib::Period(getFloatFrequency ());
+          QuantLib::BusinessDayConvention bdc = getBusinessDayConvention (fixedFlag);
+          return QuantLib::ext::shared_ptr<QuantLib::Schedule> 
+               (new QuantLib::Schedule (QuantLib::Date (startDate),
+                                        QuantLib::Date (mtyDate),
+                                        period,
+                                        calendar,
+                                        bdc,
+                                        bdc,
+                                        QuantLib::DateGeneration::Forward,
+                                        false));
+     }
+     QuantLib::ext::shared_ptr<QuantLib::VanillaSwap> getSwap (QuantLib::Calendar calendar) {
+		QuantLib::ext::shared_ptr<QuantLib::IborIndex> floatIndex = getFloatingRateIndex ();
+          return QuantLib::ext::shared_ptr<QuantLib::VanillaSwap>
+               (new QuantLib::VanillaSwap (getType (), 
+                                           notional,
+                                           *(getFixedSchedule (calendar)), 
+                                           fixedRate, 
+                                           *(getFixedDayCounter ()),
+                                           *(getFloatSchedule (calendar)), 
+                                           floatIndex, 
+                                           floatSpread, 
+                                           floatIndex->dayCounter()));
      }
 };
 
