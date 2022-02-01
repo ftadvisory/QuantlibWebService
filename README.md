@@ -1,7 +1,5 @@
 Protoype creation of a web service wrapper for Quantlib using oat++ 
 
-Leverages starter project from oat++ including the Swagger module to describe and interact with the web service in a UI
-
 See more:
 
 - [Quantlib Website](https://www.quantlib.org/)
@@ -52,6 +50,8 @@ $ make install
 ``` 
 
 - `Quantlib` must be installed.  Follow instructions at `https://www.quantlib.org/download.shtml`
+
+To build the servie
 ``` 
 $ mkdir build && cd build
 $ cmake ..
