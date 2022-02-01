@@ -53,9 +53,11 @@ $ make install
 
 To build the service
 ``` 
+$ cd QuantlibWebService
 $ mkdir build && cd build
 $ cmake ..
 $ make 
 $ ./QuantlibWebService  # - run application.
-
 ```
+
+Go to http://localhost:8000/swagger/ui#/

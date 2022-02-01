@@ -4,6 +4,8 @@
 #include "dto/DTOs.hpp"
 #include "dto/VanillaSwapDto.hpp"
 
+#include "oatpp/core/macro/codegen.hpp"
+#include "oatpp/core/Types.hpp"
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
@@ -27,7 +29,7 @@ private:
 public:
   
   ENDPOINT_INFO(root) {
-    info->summary = "Root endpoint with 'Hello World!!!' message";
+    info->summary = "Quantlib Webservice";
     info->addResponse<Object<MyDto>>(
       Status::CODE_200, 
       "application/json");
@@ -35,7 +37,7 @@ public:
   ENDPOINT("GET", "/", root) {
     auto dto = MyDto::createShared();
     dto->statusCode = 200;
-    dto->message = "Hello World!";
+    dto->message = "Quantlib Webservice";
     return createDtoResponse(Status::CODE_200, dto);
   }
   ENDPOINT_INFO(echo) {

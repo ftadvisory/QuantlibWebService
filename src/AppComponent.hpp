@@ -61,8 +61,8 @@ public:
    .setTitle("Quantlib Web Service")
    .setDescription("Quantlib / C++ / oat++ Web Service with Swagger-UI")
    .setVersion("0.1")
-   .setContactName("Daniel Schwartz")
-   .setContactUrl("https://oatpp.io/")
+   .setContactName("Daniel Schwartz / FT Advisory")
+   .setContactUrl("https://ftadvisory.co/")
    .setLicenseName("Apache License, Version 2.0")
    .setLicenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
    .addServer("http://localhost:8000", "server on localhost");
