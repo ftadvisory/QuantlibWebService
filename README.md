@@ -51,7 +51,7 @@ $ make install
 
 - `Quantlib` must be installed.  Follow instructions at `https://www.quantlib.org/download.shtml`
 
-To build the servie
+To build the service
 ``` 
 $ mkdir build && cd build
 $ cmake ..
