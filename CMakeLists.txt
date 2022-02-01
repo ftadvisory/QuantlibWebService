@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(project_name my-project) ## rename your project here
+set(project_name QuantlibWebService) ## rename your project here
 
 project(${project_name})
 

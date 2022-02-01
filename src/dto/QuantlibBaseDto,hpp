@@ -1,0 +1,159 @@
+#ifndef QuantlibBaseDto_hpp
+#define QuantlibBaseDto_hpp
+
+#include <ql/currencies/asia.hpp>
+#include <ql/currencies/america.hpp> 
+#include <ql/currencies/europe.hpp>
+#include <ql/indexes/ibor/all.hpp>
+#include <ql/time/daycounters/actual360.hpp>
+#include <ql/time/daycounters/thirty360.hpp>
+#include <ql/time/daycounters/actual365fixed.hpp>
+#include <ql/time/frequency.hpp>
+#include <ql/time/period.hpp>
+#include <ql/indexes/ibor/all.hpp>
+
+#include OATPP_CODEGEN_BEGIN(DTO)
+
+ENUM(CurrencyType, v_int32,
+     VALUE(USD,840,"USD"), // ISO Code for USD
+     VALUE(JPY,392,"JPY"), // ISD Code for JPY
+     VALUE(EUR,978,"EUR"), // ISO Code for EUR
+     VALUE(GBP,826,"GBP")  // ISO Code for GBP
+);
+
+class QuantlibCurrencyDto : public oatpp::DTO {
+  
+     DTO_INIT(QuantlibCurrencyDto, DTO);
+
+     DTO_FIELD(Enum<CurrencyType>::AsString, currency, "currency");
+     
+     QuantLib::Currency getCurrency () {
+          CurrencyType fx = currency;
+          if (fx == CurrencyType::USD) {
+               return QuantLib::USDCurrency ();
+          } else if (fx == CurrencyType::EUR) {
+               return QuantLib::EURCurrency ();
+          } else if (currency == CurrencyType::JPY) {
+               return QuantLib::JPYCurrency ();
+          } else if (currency == CurrencyType::GBP) {
+               return QuantLib::GBPCurrency ();
+          }
+          throw ("QuantlibCurrencyDto - Undefined Currency");
+     }
+     int getCurrencyNumericCode () {
+          return static_cast<int>(*currency);
+     }
+};
+
+ENUM(DaycountType, v_int32,
+     VALUE(THIRTY360, 1, "THIRTY360"),
+     VALUE(ACTUAL360, 2, "ACTUAL360"),
+     VALUE(ACTUAL365, 3, "ACTUAL365")
+);
+
+class QuantlibDaycountTypeDto : public oatpp::DTO {
+  
+     DTO_INIT(QuantlibDaycountTypeDto, DTO);
+
+     DTO_FIELD(Enum<DaycountType>::AsString, daycounttype, "daycounttype");
+     
+     QuantLib::ext::shared_ptr<QuantLib::DayCounter> getDayCounter () {
+          DaycountType dt = daycounttype;
+          switch (dt) {
+               case DaycountType::THIRTY360:
+                    return QuantLib::ext::shared_ptr<QuantLib::DayCounter> (new QuantLib::Thirty360 (QuantLib::Thirty360::ISDA));
+               case DaycountType::ACTUAL360:
+                    return QuantLib::ext::shared_ptr<QuantLib::DayCounter> (new QuantLib::Actual360 ());
+               case DaycountType::ACTUAL365:
+                    return QuantLib::ext::shared_ptr<QuantLib::DayCounter> (new QuantLib::Actual365Fixed ());
+               default: 
+                    break;
+          }
+          throw ("QuantlibDaycountTypeDto - Undefined Day Count Type");
+     }
+};
+
+ENUM(Frequency, v_int32,
+     VALUE(ANNUAL, QuantLib::Annual, "ANNUAL"),
+     VALUE(SEMIANNUAL, QuantLib::Semiannual, "SEMIANNUAL"),
+     VALUE(QUARTERLY, QuantLib::Quarterly, "QUARTERLY"),
+     VALUE(MONTHLY, QuantLib::Monthly, "MONTHLY"),
+     VALUE(WEEKLY, QuantLib::Weekly, "WEEKLY"),
+     VALUE(DAILY, QuantLib::Daily, "DAILY")
+);
+
+class QuantlibFrequencytDto : public oatpp::DTO {
+  
+     DTO_INIT(QuantlibFrequencytDto, DTO);
+
+     DTO_FIELD(Enum<Frequency>::AsString, frequency, "frequency");
+     
+     QuantLib::Frequency getFrequency () {
+          Frequency f = frequency;
+          switch (f) {
+               case Frequency::ANNUAL:
+                    return QuantLib::Annual;
+               case Frequency::SEMIANNUAL:
+                    return QuantLib::Semiannual;
+               case Frequency::QUARTERLY:
+                    return QuantLib::Quarterly;
+               case Frequency::MONTHLY:
+                    return QuantLib::Monthly;
+               case Frequency::WEEKLY:
+                    return QuantLib::Weekly;
+               default:
+                    break;
+          }
+          return QuantLib::NoFrequency;
+     }     
+};
+
+ENUM(IndexFamily, v_int32,
+     VALUE(LIBOR,1, "LBOR"),
+     VALUE(OIS,2,"OIS")
+);
+
+class QuantlibIndextDto : public oatpp::DTO {
+  
+     DTO_INIT(QuantlibIndextDto, DTO);
+     DTO_FIELD(Enum<IndexFamily>::AsString, indexFamily);
+     QuantLib::ext::shared_ptr<QuantLib::IborIndex> getIndex (QuantLib::Currency currency, QuantLib::Period tenor) {
+          IndexFamily f = indexFamily;
+          if (indexFamily == IndexFamily::LIBOR) {
+               if (currency.code () == "USD") {
+                    return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::USDLibor (tenor));
+               } else if (currency.code () == "EUR") {
+                    return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::EURLibor (tenor));
+               } else if (currency.code () == "JPY") {
+                    return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::JPYLibor (tenor));
+               } else if (currency.code () == "GBP") {
+                    return QuantLib::ext::shared_ptr<QuantLib::IborIndex> (new QuantLib::GBPLibor (tenor));
+               }
+          }
+          throw ("QuantlibIndextDto - Undefined Floating Rate Index");
+     }
+};
+
+ENUM(BusinessDayConvention, v_int32,
+     VALUE(FOLLOWING, QuantLib::Following, "FOLLOWING" ),
+     VALUE(MODIFIEDFOLLOWING, QuantLib::ModifiedFollowing, "MODIFIEDFOLLOWING"),
+     VALUE(PRECENDING, QuantLib::Preceding, "PRECEDING"),
+     VALUE(MODIFIEDPRECENDING, QuantLib::ModifiedPreceding, "MODIFIEDPRECENDING"),
+     VALUE(UNADJUSTED, QuantLib::Unadjusted, "UNADJUSTED"),
+     VALUE(HALFMODIFIEDFOLLOWING, QuantLib::HalfMonthModifiedFollowing, "HALFMODIFIEDFOLLOWING"),
+     VALUE(NEAREST, QuantLib::Nearest, "NEAREST")
+);
+
+class QuantlibBusinessDayConventionDto : public oatpp::DTO {
+  
+     DTO_INIT(QuantlibBusinessDayConventionDto, DTO);
+     DTO_FIELD(Enum<BusinessDayConvention>::AsString, businessDayConvention) = BusinessDayConvention::MODIFIEDFOLLOWING;
+     QuantLib::BusinessDayConvention get () {
+          return QuantLib::BusinessDayConvention (static_cast<int> (*businessDayConvention));
+     }
+};
+
+
+#include OATPP_CODEGEN_END(DTO)
+
+#endif /* QuantlibBaseDto_hpp */

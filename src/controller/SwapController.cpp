@@ -27,16 +27,14 @@ namespace QuantLib {
 
 void SwapController::createSwap (Object<VanillaSwapDto> dto) {
 	try {
-        ext::shared_ptr<VanillaSwap> swap = dto->getSwap (TARGET());
+        ext::shared_ptr<VanillaSwap> swap = dto->buildSwap (TARGET());
 		std::ostringstream swapDetails;
-		Date startDate = Date (dto->startDate);
-		Date mtyDate   = Date (dto->mtyDate);
-		swapDetails << "notional: " << swap->nominal () << " start date: " << startDate << " mty: " << mtyDate;
+		swapDetails << "notional: " << swap->nominal () << " start date: " << Date (dto->startDate) << " mty: " << Date (dto->mtyDate);
 		OATPP_LOGI("SwapController::createSwap", "Swap Created %s", swapDetails.str ().c_str ());
 
 	} catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
+        OATPP_LOGI("SwapController::createSwap", "Swap Error: %s", e.what());
     } catch (...) {
-        std::cout << "unknown error" << std::endl;
+        OATPP_LOGI("SwapController::createSwap", "Unknown Error");
     }
 }

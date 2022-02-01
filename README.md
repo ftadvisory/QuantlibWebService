@@ -1,9 +1,10 @@
-# oatpp-starter [![Build Status](https://dev.azure.com/lganzzzo/lganzzzo/_apis/build/status/oatpp.oatpp-starter?branchName=master)](https://dev.azure.com/lganzzzo/lganzzzo/_build/latest?definitionId=10&branchName=master)
+Protoype creation of a web service wrapper for Quantlib using oat++ 
 
-Starter project of oat++ (AKA oatpp) application. Based on oatpp Multithreaded (Simple) API.
+Leverages starter project from oat++ including the Swagger module to describe and interact with the web service in a UI
 
 See more:
 
+- [Quantlib Website](https://www.quantlib.org/)
 - [Oat++ Website](https://oatpp.io/)
 - [Oat++ Github Repository](https://github.com/oatpp/oatpp)
 - [Get Started](https://oatpp.io/docs/start)
@@ -17,7 +18,7 @@ See more:
 |- src/
 |    |
 |    |- controller/                      // Folder containing MyController where all endpoints are declared
-|    |- dto/                             // DTOs are declared here
+|    |- dto/                             // DTOs (data transfer objects) are declared here
 |    |- AppComponent.hpp                 // Service config
 |    |- App.cpp                          // main() is here
 |
