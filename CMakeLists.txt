@@ -36,11 +36,11 @@ target_include_directories(${project_name}-lib PUBLIC src)
 
 ## add executables
 
-add_executable(${project_name}-exe
+add_executable(${project_name}
         src/App.cpp
         test/app/MyApiTestClient.hpp)
-target_link_libraries(${project_name}-exe ${project_name}-lib)
-add_dependencies(${project_name}-exe ${project_name}-lib)
+target_link_libraries(${project_name} ${project_name}-lib)
+add_dependencies(${project_name} ${project_name}-lib)
 
 add_executable(${project_name}-test
         test/tests.cpp
@@ -53,7 +53,7 @@ add_executable(${project_name}-test
 target_link_libraries(${project_name}-test ${project_name}-lib)
 add_dependencies(${project_name}-test ${project_name}-lib)
 
-set_target_properties(${project_name}-lib ${project_name}-exe ${project_name}-test PROPERTIES
+set_target_properties(${project_name}-lib ${project_name} ${project_name}-test PROPERTIES
         CXX_STANDARD 11
         CXX_EXTENSIONS OFF
         CXX_STANDARD_REQUIRED ON
