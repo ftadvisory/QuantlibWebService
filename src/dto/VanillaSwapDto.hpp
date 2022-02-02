@@ -34,6 +34,7 @@ class VanillaSwapDto : public oatpp::DTO {
      DTO_FIELD(Object<QuantlibFrequencytDto>, floatTenor, "floatTenor");
      DTO_FIELD(Object<QuantlibDaycountTypeDto>, floatDaycount, "floatDaycount");
      DTO_FIELD(Object<QuantlibBusinessDayConventionDto>, floatDayConvention, "floatDayConvention");
+     DTO_FIELD(Object<QuantlibDateGenerationRuleDto>, dateGenerationRule, "dateGenerationRule");
      
      QuantLib::VanillaSwap::Type getType () {
           SwapType swapType = type;
@@ -47,16 +48,13 @@ class VanillaSwapDto : public oatpp::DTO {
           }
           throw ("VanillaSwapDto - Undefined type");
      }
-     QuantLib::Currency  getCurrency () {return currency->getCurrency ();}
-     QuantLib::Frequency getFrequency (bool fixedFlag) {
-          return (fixedFlag) ? fixedFrequency->getFrequency () : floatFrequency->getFrequency ();
+     QuantLib::Period    getPeriod (bool fixedFlag) {
+          return (fixedFlag) ? fixedFrequency->getPeriod () : floatFrequency->getPeriod ();
      }
-     QuantLib::Period    getFloatTenor () {return QuantLib::Period (floatTenor->getFrequency ());}
+     QuantLib::Period    getFloatTenor () {return floatTenor->getPeriod ();}
      QuantLib::ext::shared_ptr<QuantLib::IborIndex> getFloatingRateIndex () {
           return floatIndexFamily->getIndex (currency->getCurrency (), getFloatTenor ());
      }
-     QuantLib::ext::shared_ptr<QuantLib::DayCounter> getFixedDayCounter () {return fixedDaycount->getDayCounter ();}
-     QuantLib::ext::shared_ptr<QuantLib::DayCounter> getFloatDayCounter () {return floatDaycount->getDayCounter ();}
      QuantLib::BusinessDayConvention getBusinessDayConvention (bool fixedFlag) {
           return (fixedFlag) ? fixedDayConvention->get () : floatDayConvention->get ();
      }
@@ -71,11 +69,11 @@ class VanillaSwapDto : public oatpp::DTO {
           return QuantLib::ext::shared_ptr<QuantLib::Schedule> 
                (new QuantLib::Schedule (QuantLib::Date (startDate),
                                         QuantLib::Date (mtyDate),
-                                        QuantLib::Period (getFrequency (fixedFlag)),
+                                        getPeriod (fixedFlag),
                                         calendar,
                                         bdc,
                                         bdc,
-                                        QuantLib::DateGeneration::Forward,
+                                        dateGenerationRule->get(),
                                         false));
      }
      QuantLib::ext::shared_ptr<QuantLib::VanillaSwap> buildSwap (QuantLib::Calendar calendar) {
@@ -85,7 +83,7 @@ class VanillaSwapDto : public oatpp::DTO {
                                            notional,
                                            *(buildFixedSchedule (calendar)), 
                                            fixedRate, 
-                                           *(getFixedDayCounter ()),
+                                           *(fixedDaycount->getDayCounter ()),
                                            *(buildFloatSchedule (calendar)), 
                                            floatIndex, 
                                            floatSpread, 
