@@ -60,4 +60,9 @@ $ make
 $ ./QuantlibWebService  # - run application.
 ```
 
-Go to http://localhost:8000/swagger/ui#/
+Go to http://localhost:8000/swagger/ui#/ or get the results inline if you have curl installed
+
+``` 
+curl -X POST "http://localhost:8000/echo" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{\"id\":0,\"notional\":10000,\"type\":1,\"currency\":{\"currency\":\"USD\"},\"startDate\":40527,\"mtyDate\":47832,\"fixedRate\":2,\"fixedFrequency\":{\"frequency\":\"SEMIANNUAL\"},\"fixedDaycount\":{\"daycounttype\":\"THIRTY360\"},\"fixedDayConvention\":{\"businessDayConvention\":\"FOLLOWING\"},\"floatSpread\":0,\"floatIndexFamily\":{\"indexFamily\":\"LBOR\"},\"floatFrequency\":{\"frequency\":\"QUARTERLY\"},\"floatTenor\":{\"frequency\":\"QUARTERLY\"},\"floatDaycount\":{\"daycounttype\":\"ACTUAL360\"},\"floatDayConvention\":{\"businessDayConvention\":\"FOLLOWING\"},\"dateGenerationRule\":{\"dateGenerationRule\":\"FORWARD\"}}"
+```
+
