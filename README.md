@@ -1,4 +1,4 @@
-Protoype creation of a web service wrapper for Quantlib using oat++ 
+Prototype creation of a web service wrapper for Quantlib using oat++ 
 
 See more:
 
